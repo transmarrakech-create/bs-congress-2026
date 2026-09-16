@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BS Congress 2026 · Votre retour vers l'aéroport</title>
+<style>
+  :root{--bleu:#1a3a6b;--bleu-clair:#e9eef6;--encre:#1b1f24;--gris:#5f6670;--trait:#dfe3e8;--fond:#f5f6f8;--rouge:#a11d1d;--rouge-clair:#fbecec;--vert:#1f6b3a;--vert-clair:#e8f3ec;--ambre:#8a5a00;--ambre-clair:#fff4dc}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--fond);color:var(--encre)}
+  body{font:16px/1.5 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:0 16px}
+  .page{max-width:560px;margin:0 auto;padding:28px 0 48px}
+  .marque{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--bleu);font-weight:700}
+  h1{font-size:26px;line-height:1.2;margin:6px 0 4px}
+  .sous{color:var(--gris);margin:0 0 18px}
+  .carte{background:#fff;border:1px solid var(--trait);border-radius:12px;padding:18px;margin-top:14px}
+  .bandeau{border-radius:10px;padding:10px 14px;font-size:14px;margin-top:14px}
+  .bandeau.info{background:var(--bleu-clair);color:var(--bleu)}
+  .bandeau.apercu{background:var(--rouge-clair);color:var(--rouge);font-weight:700}
+  label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+  label .facultatif{font-weight:400;color:var(--gris)}
+  input,textarea,select{width:100%;font:inherit;padding:11px 12px;border:1px solid #c9ced6;border-radius:8px;background:#fff;color:var(--encre)}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu);outline-offset:1px;border-color:var(--bleu)}
+  textarea{min-height:80px;resize:vertical}
+  button{font:inherit;font-weight:700;border-radius:10px;border:0;padding:13px 16px;width:100%;cursor:pointer;margin-top:12px}
+  button:disabled{opacity:.6;cursor:wait}
+  .principal{background:var(--bleu);color:#fff}
+  .secondaire{background:#fff;color:var(--bleu);border:1px solid var(--bleu)}
+  .discret{background:transparent;color:var(--gris);text-decoration:underline;font-weight:400;padding:8px}
+  .confirmer{background:var(--vert);color:#fff}
+  .message{margin-top:10px;font-size:14px}
+  .message.erreur{color:var(--rouge);font-weight:600}
+  .nom{font-size:20px;font-weight:700;margin:0 0 10px}
+  dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+  dt{color:var(--gris);font-size:14px}
+  dd{margin:0;font-weight:600}
+  .grand{font-size:22px;color:var(--bleu)}
+  .alerte{background:var(--ambre-clair);color:var(--ambre);border-radius:8px;padding:10px 12px;margin-top:14px;font-size:14px}
+  .merci{background:var(--vert-clair);color:var(--vert);border-radius:10px;padding:14px;font-weight:600}
+  .piege{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  footer{margin-top:28px;font-size:13px;color:var(--gris);text-align:center}
+  footer a{color:var(--bleu)}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="marque">Trans Marrakech</div>
+  <h1>BS Congress 2026</h1>
+  <p class="sous">Votre transfert de l'hôtel vers l'aéroport, les 22 et 23 septembre.</p>
+
+  <div id="apercu" class="bandeau apercu" hidden>Aperçu : cette page n'est reliée à aucun tableau, les réponses ne partent nulle part.</div>
+  <div class="bandeau info">Le Maroc recule d'une heure dans la nuit du 19 au 20 septembre. Toutes les heures de cette page sont en heure de Marrakech, après ce changement.</div>
+
+  <!-- 1. Recherche -->
+  <form id="recherche" class="carte" autocomplete="off">
+    <label for="saisie">Votre prénom et votre nom</label>
+    <input id="saisie" name="saisie" autocomplete="name" placeholder="Ex. : Marie Dupont" required>
+    <button class="principal" id="btn-chercher" type="submit">Voir mon transfert</button>
+    <div id="msg-recherche" class="message" role="status"></div>
+  </form>
+
+  <!-- 2. Fiche trouvee -->
+  <section id="fiche" class="carte" hidden>
+    <p class="nom" id="f-nom"></p>
+    <dl>
+      <dt>Départ</dt><dd id="f-jour"></dd>
+      <dt>Vol</dt><dd id="f-vol"></dd>
+      <dt>Décollage</dt><dd id="f-decollage"></dd>
+      <dt>Rendez-vous</dt><dd><span class="grand" id="f-pickup"></span><br><span style="font-weight:400;color:var(--gris);font-size:14px">à l'Hôtel Barceló</span></dd>
+    </dl>
+    <p class="message" id="f-regle" style="color:var(--gris)"></p>
+    <div class="alerte" id="f-info" hidden></div>
+
+    <label for="f-tel">Votre téléphone <span class="facultatif">(facultatif, pour vous joindre le jour du départ)</span></label>
+    <input id="f-tel" type="tel" autocomplete="tel" placeholder="+33 6 12 34 56 78">
+
+    <div id="choix">
+      <button class="confirmer" type="button" data-action="confirme">C'est bon, je confirme</button>
+      <button class="secondaire" type="button" data-action="ouvrir-changement">Il y a un changement</button>
+      <button class="secondaire" type="button" data-action="pas_de_navette">Je n'ai pas besoin de la navette</button>
+    </div>
+
+    <form id="changement" hidden>
+      <label for="c-date">Date du vol</label>
+      <select id="c-date">
+        <option value="2026-09-22">Mardi 22 septembre</option>
+        <option value="2026-09-23">Mercredi 23 septembre</option>
+        <option value="autre">Une autre date (précisez en commentaire)</option>
+      </select>
+      <label for="c-vol">Numéro de vol</label>
+      <input id="c-vol" placeholder="Ex. : TO3019">
+      <label for="c-heure">Heure de décollage <span class="facultatif">(heure de Marrakech)</span></label>
+      <input id="c-heure" type="time">
+      <label for="c-commentaire">Commentaire <span class="facultatif">(facultatif)</span></label>
+      <textarea id="c-commentaire"></textarea>
+      <button class="principal" type="submit">Envoyer le changement</button>
+      <button class="discret" type="button" data-action="fermer-changement">Annuler</button>
+    </form>
+    <div id="msg-fiche" class="message" role="status"></div>
+    <button class="discret" type="button" data-action="autre-nom">Chercher un autre nom</button>
+  </section>
+
+  <!-- 3. Nom introuvable -->
+  <section id="introuvable" class="carte" hidden>
+    <p><b>Nous ne trouvons pas de transfert retour à ce nom.</b></p>
+    <p class="message" style="color:var(--gris)">Vérifiez l'orthographe du prénom et du nom. Si vous avez besoin d'une navette pour aller à l'aéroport, envoyez-nous vos informations :</p>
+    <form id="demande">
+      <label for="d-nom">Prénom et nom</label>
+      <input id="d-nom" required>
+      <label for="d-date">Date du vol</label>
+      <select id="d-date">
+        <option value="2026-09-22">Mardi 22 septembre</option>
+        <option value="2026-09-23">Mercredi 23 septembre</option>
+        <option value="autre">Une autre date (précisez en commentaire)</option>
+      </select>
+      <label for="d-vol">Numéro de vol</label>
+      <input id="d-vol" placeholder="Ex. : TO3019">
+      <label for="d-heure">Heure de décollage <span class="facultatif">(heure de Marrakech)</span></label>
+      <input id="d-heure" type="time">
+      <label for="d-tel">Téléphone <span class="facultatif">(facultatif)</span></label>
+      <input id="d-tel" type="tel" autocomplete="tel">
+      <label for="d-commentaire">Commentaire <span class="facultatif">(facultatif)</span></label>
+      <textarea id="d-commentaire"></textarea>
+      <button class="principal" type="submit">Envoyer ma demande</button>
+    </form>
+    <div id="msg-demande" class="message" role="status"></div>
+    <button class="discret" type="button" data-action="autre-nom">Chercher un autre nom</button>
+  </section>
+
+  <!-- 4. Merci -->
+  <section id="merci" class="carte" hidden>
+    <div class="merci" id="merci-texte"></div>
+    <button class="discret" type="button" data-action="autre-nom">Chercher un autre nom</button>
+  </section>
+
+  <input class="piege" id="piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+  <footer>Une question ? <a id="lien-whatsapp" href="#">Écrivez-nous sur WhatsApp</a></footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var SEL = "yYIsNJ12x+6l6I98Ve04Zw==";
+  var ITERATIONS = 150000;
+  var COFFRE = {"26765726d9d1fc0f25e6c0f0576fa806":["q1BOp1Cjo+omyJvA","A+ESJcUFotTRKH9YjYI2ppeeYA24MmkcghubSWFu2iulx23xNJptst1XVV12KPaexGoSpGQWeermrwkIHC1R1oX0L2k6qKT8KZdAQI1vXRhK9uoLXA8K373ncA1+UXPnUgAWFNOHmV+SSiLFqfzWbvNwWZU0SDi8d8VC8KjUUuyXXsYGAq2Y99NfMQvg/3V1ASEsdtNQo/uLo1jkDt3kdWXlbvCdD6evz2OoknzjP7rDw4VyyGpHviWYoM5ssLqD/8GEWcc="],"df2d0ed3abb457485af3c6a5277ff759":["Zu01cByfkpWtPYLc","+rWBvZ3TzNlS0SGVuVVBf2zJfkkMkdQ9k8gC7DVSddKIKTfu6I30NUQzg/byrzRoKXC1LNe54OD4pCXrWH1q82hpJLEHgiRAMS8JYIPiuSVhot10lNsAp/E7BC3nDrZ5Ex4mj33wo9zfi54AMTdKVGDzeYSB+Iu/weYUFaMKIFtkwttLIWMLATn96iK9ITt4guQm7StdrCofxp8D07sLytilv56aX32NEUGzjGKIjDOCyxy9M0eF+ELAhFy2UI8/pigS"],"d781a5b68f3ebcdbeee1a6d0696c1cf8":["Y+yA7IdofwE74jF9","jSkZ3gNTdJxvauz2u3iX3ZUkddm9iS6MAJko/OEf1IAQ5yP+f38CR/HNBWfxOM1L8xZVyn9F2AUyiCgLZpz3FWnmBDXSbkMBICix2IzAY6lFMYrskQ47OXXDu8us35KuFQwsCCoQl9M9rzl1GlIO9IlSYIUZP878N2941FiwNWTg22Sx68i0/A9/coa/tGm/ktyQFucMJXG7TSgwIyMi8JTva3fi4EFfilVA/d0vlDiNcyJb2er2ob8JOZyrI6s/ZHe+pbP6DQ/I"],"4682a8d6481be6b4a39f1452f789aeaf":["5A8jpr6GUN/ExFRo","NMKO7BZCl6jPPllf2qZYxp8g/fKE7ng5ZTsf/HrleRp3fK8k4xVC9gHL3EXiyVtvzPUqLFJo+vBdhMOgbUS/aY+SOR3KnY8qJTwgbya/ShBtdkoboJ1Q3VrS91MFRLfOmv1IVSLEuc6Savhzhna3yueNNGmECUlYdQSJ7Mf7klQUQ0cBYBORfysTLBxgwb6cb46Vorr+Lg5a0Zp7iH1Nny3hO2M0JpNEdSelF8Sd7oHMBgqAvNHIGjiVYAbpvYRmJLh8XopypQ7G0HRszA0qqtHJkW2lKjWpiDPJO587IgWeouKwvg4S3iOi+ACKZ9oEMyqflvNzEm/cZVyh3mclral21xnuuQ06HlPELrEFO7b8YfalOkFa8ElmmjJRiVVIxVo47y+mbiIgXMd2Rwm9w/55AkmJKQZyvQRKPg9kfYWrJ1A6+L/3Lsz9+Ng50yAYdbxHuq9H7VjdNdunUwTyv8v9jG8Rig=="],"11c28f65e0b5bc60a338d6ddc39954e2":["yyHIU7OcvwFGiat0","yZr5BGqwMCFntA6B9bUwGsvK/u0sQIlJyvlcPC0gLIQtmKqFsNDX4tHEcDyj0hD0wtfJipVbwwbHNukLOBtL2S7+wO2V0VaEqRasuRUOCpDNiMEqRZkcJ0tA4380+QNNkM31SiegJ7r4p0hgiZhuJYyMva6k3DMhQwK18g77E6poqsBALq8qiahkQUumN1Yb5aQCExHboZIPqp8iZh3NCQu9NzVt5LPyar1hIb7GAhRQTlBI1yv+Shgroh7nZILEVjzVKGkzmuX2TJqaURj7XK20pXTS+fzT15TAavrwO/NV0/vMsWqIrYqjBe4CcJHbCBKd/0AbRS0nl551v74ilJohP9w9XOImS21k2eB2VoKwRHhllxWRlH8CBv+pur24kXyqeUtS25vaIbpF1rwIHSB7zDQXyzVYulJxW36tir+jEx48OHkBFGXlcsOyEgsZk+TGCFpyXBq4nzYDNQ=="],"225c611e31e4ddcbda3b79245bca5d42":["rTDv1t599OzPFKyV","fdpvzzoenO1BLb4mdswuY3+9rqfgTPIH5Wd79MU4JgcteQaBON7b8IiOnsnUeElZLYlLHxNpJtnOE2YIuDuS/wq0Za7Uh42FGwN1ZOVX5ktpFyIWumPlY5XSxk7Asl0waXFiVywC7+CCo16bke1GPAA04AWQNAthO6bk5hhsysCHxZ4JBXXd437ORV//wML337FAfwsblmQIfEAz3CQVZvqwnhVLt873JDfSgPFCnbD1YkalsGpHBbTr2FoF9KUjYowKbw0hvXxNifD6CJ/SnetpjKoouMyNU6hiwMlUcxvewfMIvXEeQthHxuKlk2O40STBleHnXbH4fxtj9cLTNAgRUF8baLPnuIDHsbwooX5BKqKZJjvNiQqesk7sBuRVKT6A5FWmjsLCMCyYAf4usIh3KpSsea0qw5H2mvYKHdNMophP8F8XgwwM/p5WNCDvloChmqx0/6OghByk6PUAA4k+9c0wC8BVgGgkmS97u+Dy8b2p3VpeTPRHFi1Euv1hlbpgrH7jHTMZTrnunj3EFoPBBJRgKQzOPF6Fj8NLpPWNKCI3bvflJzqVoaA3Bl4h2oWGjDrM"],"25c682026fd077abcfab861bbf164581":["G+jAh4LZmk0zdyXI","lns6wnGJMu0X6FebvWdsSQ8kMqZhbCmOMAAwb+K991ctQLo+e+psbIqCughjffIt/MIXzUm8/s1BfqcwOduEKaIP4+UwUM3trAJTmGLzAKk+Kh4CU9LSUtJtTpNwqR4Ye7TkLjTHhsZix9UWmdjY0MVR7AChWP2ZGRx60PkOUnESulDXx274gpWkV/YB4tyHKc6f+gDZvA50oGEjOOZtJnpNh7M+umJNVPe3zDkpObWzEDKSi0Uz6p/FeTz1hhy7dhtbMNktcX4="],"0feab4a2a3c285f37065da77f0b8b161":["HzyIaOgVBODgrM7V","GiW7+KWKQmGMG8xifRJ4Wxs4pK9aNRqWyo77scjOx4BQ/4xObbtrA1l980PwHakaUOFQHzRyfrKPPuvdIU3lSUdKMF12xVftu8lRaaZmOD7MyuA8LfkI+eDrJyA2cHGqWAy04mTDt2SQ73ZngU/ivMRv6YFe0PGfj0iW0jWbaVfzwbtg7HIsB9cSulG8WhgEjTlOqDytc0ekAAnDiK8EWXCzvX/JJS9y50k0PRTqDmayMh1sf61iCTQCVNTx6TVVSJGCzmIm5b+s6eSmQd0="],"a1654ba09c8b6d6fd7ce75764455e422":["MK8IoBAOH9fj4FZ8","apXhJDYZLiL7iCvUeh1TuU9aDevPXaqBxy8txwfgHXxpAduZOxGpXWHDQS/7S2O8rHX6FyFjPrxlEBl8ZP799Wlq27VBoC+FVpmzj/W8KS5bHJPXusunXHnOWn0jFEPJTzxvg1CnOivkywSt849f8ypmNb2sXPwE9lrkBZeOKZ1rav82kW65iXISLZatXpLg6Gww/EFhfkyi9bq+RYvOB7VpvggLMjBEuzxZIL+krhr5wlvU2yd1FTJ//WNjekPPYa9+znq4HVdHeOQh4mI3UXOYUgD9KCMJLF2QMYNwgdGUiec6qoY9HqEyWgZb56PIBxVRC8GQyhRfbd2DUxTx1aMOArW1aYI+49uH+mkNH9BKjGXeci4H9X3rpXf6FJQn/9p3iQcsLFZ5V27iKgBMutD9sJdVHTGoXBSDFWuy7F4qAukdrJviH+AAO9AzJ3B+nQzGU9TgyV+l50RHoem43kYKYw=="],"10037460adf7adf842e3ca11dc65419c":["aDVplUPY43Ybjg5v","zrOsUmexQg0xLnVc/YZxWMF6InD+RXWXp8DWJUVmbfq9PVxmzOeMUontJKJ3GgML4xHv3KEDRiiOlpAVXOjpZP1D/FlFEgHUm5Rir7rvwWr8njRc9CQAeX3YtFCoTGiCwxT4Z7CXkcoerQOA+ypC89O8G96wVn+O7xTcgwt0ONvuztTf6AkMt6QUqaYbzlh3GsL81QDygM/0SHVpGFMnGBHdbDgY8OmLHlz26OSj8kuDIEjmQpzTLw/w8KWZsJsfpH8ryd8VgBkdSsFnfKpJzWglYjngng=="],"f4b875574a57a90c0f07d3c9862c5246":["likeZ+srGNBWHYTQ","EkBPAZoWaGutHUoUwdqejjDR1ZbTcCHHWP+YEHaBnnZT83WR9lOMWl6zkEMNS1uU41Hl8QwtDC2UNy68LpCc+7lkuPm8Zg7sg6ghjyETAb/xmRR8WUIvCSygerx/hzil22H4WYSbBJNJODDwPmunl6FdTlcD9vjqK1sODzlFxKIfAbc8cZWUV2YSk6EnT8+6cbCrfeua0EZIydyQ/rrHQi6p0rW/YRvn5vcFzenqiWhS8YLyTrFnXpZotEaSKe5ybg8sF54F7DxKvUDe"],"e1442a043d408318955b7b153c2ed48f":["mBVrl31515EmMVvO","t6V34SnF/L6MivWNSZyIwvN3ArWDVGs0KP6ASCuK+/PQH11PStwxinGKA7DQNaC30HV7mMLdLpcv0PU0pO2GPmiEGZEyolFEloFKKuAa9VAlZYfwUw+cGT5wfCbyPoIjHLKpOCVa4BDXXcMvLWmvBM7qaF2SBjm3sF9jhanF/nzLpseS0j27f4PFrJRXR45U8KnoTtiI3FevwuB2jp9lHLnBC/ny7DGaBptXJUfudRkVEjlGT5c/8De7X+JJ5LF5alzb39D1rChaEEWKUQ1tq/tWU5xzExbg6zaVRi9YZrbD7zKPUp+2ZEvPCnPwCN/4ufLHvFBe7/geVWAp/vP+4Fu/AebB3eRNsY/RMVgCKnyfkvt7BYDHOVPQitr+0dobGc1a5+gn9Q=="],"35ed0e2b7179374a81c613df04f27704":["t5Meg8k4eOoVQIGp","GnGD7h6TUrig1FU+c2Uv6pI/fRYyHO8+C4wfYd0YLWuHrebRLU+7e1uuWJ8e5Va2SWAsva5FCNVCZO9pEd0q/w50vey19jEoQ08lhHTjQtESE3lpGdVLYOIG4lqMKBbLo8+z8WpOAG3aCNEWH+vg5vnwOQ4VQMXOA/7wMSJk3uAkqrRHFr9/vWrX8Bk5Q01KgpFK4ReXxw4HJFhIOFVAGo1Oh5CbYn0qmllJHZ+vZ+uKVbmGB055bVxuXT5fbVM/z+vWQuSzzAMmatBn"],"3fa30b513f807c2e9a4cccfd0d1526f7":["NY5kQRZdZI16fTr0","sHM+hFOboiNL+eIDVmiGQkntuqcWfwq9zbkC65d59K++3tNUJ/izbZuXDPvYiiR1S+S61CY5aqal55upZdSpeOrjFCapPLMk1rNrr/8948xpU3qteFf+ty3roG1gsecSyQ8l1wMyNs5Tk6NdOmZDBtr3IRr1wWAx8GUspsmyEAPBv12Dwlg6Lhdf8X1aRcMAmAlJKPwx2aS5f+DmJx3kV1HBYUI6FS7ma9YA8nqIBIVvchNpEPpnDSdWHu5+Zv1KnE8yilcSYZfckMv5TyaepcTbF6hWv5X5KCZn/ZGMFmatdqgqWcJMdTpznKHMPtjUtHJdzpO8tpXyowJCFcTH7V0zhoKBrCP8J4Mr9feapit5wFgbxfNckl/NMWh9GaeehYztUmyVa58Ocyii451Oit14OcNPRaZA5I2K3U3cBIHwMJ2q0zoijMustANdVTL7g6zi31eMQBAPn7qG+dNb9YXq"],"9b6050c2f50de2959c7777e42f59de43":["F0PfjHV3D5HfYEdq","nCd4/EGGH/AWrGVBKBMt9OJ5NGuZBS7tnFgDicuu4I+GIv9bFZpjsDWZxpbHQKBq4bvuWIeMIwm2WJHKwd6iveXt96vR7q2cD5OjbYISUrkfJK+RltwdxJUhQeaFzGQ3+LlYq8TT5153nMUJksNKbE4C/EPHWZR1h1kjC+mkmRYUkSWmmQj9OJ+FtW/S4ZtpK4/PcWEwvBylRRMbny2G6RpJGIPEOrMjev8iIUON75Atm97hfIpKDN+poV5OeuGjD5gREGEOt3PCWXFRUuA3zJn5ibrPV6hapOeys6add/gURkthrNkMqgn56jhntJXb5NxumAivD5gJPOt9RE8v9KfRwo6zOSPK4WmaQw+4nikwcq6zsnJDfEJenucD4efkpRr3GBH7h1YUZYbsvaBNQurSM/gnqb0IjNDzLXRWu67cuBGUK4tMnbERmCGpfkj901HZ/k5RpeJrcZtSfOLGkBsD9sIMednoVF3q"],"154a5b14a3e0fcf36b0bc0218508d07f":["i+wootL1/57doff1","uoFbnKqJWgafMn3zzm16vV8wpoNc1kbWyXwGw6IOjpmpFKOVItbBSHIdOdIRiNVobcDTKA8DJZ0M42USROE1IV9w4k80CbXK+fyWAPPEbZLeUUsE8PCUc9ccv2xXwfKObC9HWDnsUtOn1II+Dnq1T82Ix808LV6UMLBKzN4yksQUtn0YDqzsypbbzoh/1HR7jdoQv/PBMhYK4nZw/ihghayGGYZlqyvp5dd7ph9sWmvBP3SDvK38LGl8EEuUji00O+DjyCtlBZ6lU48bOqC4k2uaxN5ZCmzXLfNusE1oYwLNpVlbubiKhZS4pAXtF8QkIg0f9b0MwQt4YSFM2TxTtUTcjftyP2PXJWYJiXVjS9Yp67DP7soIOx8dkxM1DNnLIpIutLBjO5O3WVr/zjHUGjybJjMc13X0zCrtKSoii5ea8duMzD2St4gulIu0FgIc0LqhbZ5KbuZdB9MwMtEZkvb+hnsaBueO"],"3892db5c84b2d5b3e7ecdc544c85696d":["u4jcwZiHs9dbEHJw","b/EOnpAt9fcx6rVN4INdQI+8Ty4+dzzuVW7jByUc+MNcVV3c0CTkn3Syx7FHlJDpCCioibREJDWX0vtSXAi0TV/SRW1QL84WOpCrp0PARfJiYA8Mu1OLY9ogsO7j2jnQx46wbmWTAaYa3cDZe9LgXqLeI/L6DedX/My/BuhfN6wcQ/TGlOqDrVG8mIxbgiPS6nTdhemxuUVPsTN4gRL+jHGs+yayqLLqxltw2RNyuN3RSYbU89Z4AUK37LZ+66wqd2OwHcVIfoyNNjHLK/nAng=="],"1a8e2c36d4de85ab7a48f7070ebf2756":["+ISMvK3fcV1BMDrC","8FEFrXwSyreD0RJ82ejyL/M8enUidwYtAEeMBkUmQl4NRrfP5pZ5bk65nawneQsMUFM7YyDIAssVovDP5N159HYRbuQucJpYAOLw+BWsmu+gGKWLKpWU1Qn7rSYTQCCrXtCG6W2OCa0XwbWdl6KKkkV26v4hosVXhsAfNbPnviwRKrVlwF0q2jeWki5TMdbcEcTuXqRPtb3/w8q6u6BleiqShpeaMN+Kn++TG4d1j/zaj1/30d2xvUKZktuxIiohd9gQ91oarU34NQ=="],"c9de9ac2ca0d77cd1a236723c95de3df":["ThomnvXstA1hOjJL","6geQwZj4wtdjQFwFo37/kIjsewRbgeIJQlueGicj/nwI6Xbg7oTfRjjmdn6WLLox5V30hQkbc+gIGsLkxZmlsruzyWgMTUCKkJqY14PYFbVCY6hnyOixSnLYk4cBJbKOMLWsoCe/nNXyHLsqoAgbaY7Il8cNUg/s4E8ASWfab4CHGcV1Lkv5jXFQW1+MC/oRLdeWvbLplmEFO2yvZ3evjC7Zou+Rv6jrVdlDxDWP4KgErm3GsPSwqziCUUl4+CUIXn5eTrpfkX1pVMjmd2d3QwQ8U5Nlyd1fibWyiVfnW9/kYt69S6QcqfSEmpyanTBKN4+WdCuGV7rictpH5h+01QSskELBDFSk+gSVY5eLfBcGNoq+uy1tT4vEbJdNrL8ECAPXEkFnzMd1Sh3eXapjT7dJIHsfeLnQ+bEzTjwAGusaJPSjm80rTiq2XTlWXW4+I1AkisgbmiGUh6rXJM0="],"97cbab83030c800b0691549e46a262fb":["EWqDIlxs/YyiNujy","zOyqBPoqjo9YP4O+0d30hq0RMtwDEZ5NdOpWJ/QjEDtt2B5OAfFfmdzT36T7YLa43l7HcaGKZ+OReYof8nJpVxqgmXCsChmwZo2nEET6JQEBaHFUF11x6H4l1CRoXgfuqv8uMoUOpmOPTr1TI8Z6mcFitKlb01PBvFC4WxrUL1yHJBYxqE7wAdpK90PF23e1vlJgyh2vwlUFeQtPFQxF1IDn0Mg5TlGAqzn1fnPhkybYBz06HAFe/s9TLUqSJjCeDETFfqKMd8cA"],"7e120184d3cae5edc69713e90f27ac80":["hbXRw18PCIYhOqYv","AiBo9yIaP126PdBT7mZPc1WnDxwU5mQuO5tEZysVhgRb7EJ5hh6spQKERbJe7L7HMGUz1K5qLAkjx49esGzgHLy5+2ka2NzTUTc/SrKp71UjXxrrltiaiGU3RyImvtIswtcWl6kxD+peYt924DhUCFjUJNpYT2UH75MjL5QBK+LbsbEBE8tbw5Ely/rIB2vdO9KW0UjuXWxj18VPNFh+GcnQ/bt1Qh9JOKVV89GA2i7uZH9Z8VLG+1HwSewhEWuGN54U0TTL5FGj90cy0QVC"],"6fd2ce4685bfc7aed46c07f32015d010":["4umaUhgunLoxbKFI","UEU8d+939cFyTRdMFjiSyQ3onduz501nhcqPPOQnVnL/PSCkQ17ZPiOqYlbevtw+XzgL+Kpb3LPjO2W8XTfhTwF6gIXsq4NkAELX0xuZQapS0qM6JH0N9cEhRtfyUK5wyWeFxfkzCPOlKQEpuW+98iJDXF07rJsiNUweyZWdBs89r5axQKtkdYXHPRbzF9zJ7Xbq8ZohpvOgpZi+AHqIygMQ63faMw6k+fMFHGRRvN+J0Ry603CwMuYgnAXuf5MAIfM5dTYYqA=="],"bb3dca2019bc3b6d84d15e25340b2018":["11cOOigIouUuQVM2","1PvAMRqBvLikIXRGF9GrHW46d5qDQIRQkh+z0jbPvTVUagRgtErm9X8MO3qqNOiQlYFRDgYG7+aCnEEk6ECOYVoGlw2HmAMOd1ZLee90mo209xDTkcL731KwDYq7ZJ4f1IvMJ38IEzHR6KiB3kgC8FJJCZ/yeXNEBxwcvdZC1qrpiROjf4nC0vpNBJGih0PJpHNL1jPsG0Eew16CiRnx9dGES1cyRPKKr9H710uJLPon8UBXrD7iN+VwR4fDf1ZK31jAlZgN6Fma+kts"],"f3407cbf6565fd91321e57ee68132598":["9BgnpcX+VeCuArNZ","YLmitGRPPa+mg1HSfyFevkF2Havj/8NhFKSY8tc5Qiv1R4e0NA0yeMK3oaMv7HPVElwsdDylhWCrcBVL8gnt79qsawJy5MDJ58EavEmCpl1KgmcJNzBVR9pXK4XyW5C1rZXeD8jXilYhCvttP1fk33wFzBvt5z1mM1mrjgXXd+Ycl4RLxuLOaerX2VgDWCtyU9MBUbYHtuMkZpcITOF/4qJCTi+Y7jlJ2eV4wwcwBO+v9hye8wbPtx7Fri4IorI7vG/1rRuMsWJJ30VJ"],"9e4a49c1c660ed7e86003d782790f0d0":["2hB+BR9RRope3mPa","0WgkuVu/chyEXG7BpqkYIfNyKTI3mf2H27/BwCdHiiaz/oQ9W1/k6EdqPiPNisBnj60FTXKt9sYuXqflK4OD/sP48uG/TqI5BI4Pmh7xmyMybCkkGyRC4JPK50Rq+qYEUOW3Kb/BB770j+vGfXZylSJdNWrsyzpHaDbciBfziQih6OeHjH2eVgFjhzntuOxs8jOQ19mdP65Ti9Q2NlJItsvySxtEWOYmZAnb2gdeZKbtnkpsm/xMjzcgC/ELHiCVKBsB6+OWAw6RcV76"],"156322624a852875a8d1a9ae9ff3cdf9":["rnKy5gcC2VvX+FRJ","k2GW3HdG3TZzOnaYL8YsQ23242bNvf2QnvEIaAzVyviw01dI/hee3EEkYm3Nl7tRLgqhQXx3Fj5gmakbuj4iORbQqpV6H96Bpnza2bNzkp1gwKYE/DH8WTQCyssKVQ/aOEExmgP+5IAPI6MVUxjuM12qL25Ibht7i2wTDlZbq+V1chej/bA6Jv/73hLrXcn/v8/K4oeJYxupH8xxBTV9pOklIhfeM1mJ427XJ5NoXn+6OSiAEC3JVa3TaiBW8OGWwMXJyXAVBVesQOpnpqBf2s1FBBZNEWtzkWR6B1p9HcaldaN/s7gg/kv1JAsxuApkDQlocp6zjSrSa1/Xlu6JyYp0fj6rJXSvuZmcf/hJ29qacl3tc6XVgKGERa4GpiAHtcpBXN0dMIM4NtyBZGBd4PzWgZU/gX0="],"e2876c1fb68e6ad820e0ea2f97d2d19f":["7HqWyQsxlVguKu0B","+EBMgV62YScYlBtP81Jg3qMjf+/03+NHrXgul90TOEHB4A29fB3HCIqeFmuEkOARoqZS5vSTsdi7ssbvdD8mHdiYwhc6lvJtQbs0kU2NhMvX0qNsMyIsHm54AuKe8mbfUEx4iAv/icIcLHTyW4wAwatdUsOd5xmisosZLvliLbscul2+M1RL4WN30tsgBVqZBSVDQwKq2x279zkyfXyWnbNs92qoHYtLU0CVEs/WFCNGCaqewhQ6RakTRaoskZC2TaUOMPypfl3wCh1Ixp5PewM5uw3qh3i3gskkMESx7vYT2tqYN0CGZoBYv/tRWy4Rd7NgJQCcufyvtvL4HI9ekT4qKqsKXBBJfwbmbQYtVmoYMoQLk7sIZNVc3QEiXrz638wxvMkIkuW/3X4g2m/JxbqwYTExAIIyek/x0Sc827OEDOvSSszqQXK1jjlCkMMYdYWE67pOV1M7Zvwo3RdKUu4="],"4a67bf2fc1ea8ed7c41ca471132eb05d":["sO0+MaHkDZmqFwEe","orTeoJ50acetsu//wCRchejBge4IT1G2UNln1sdq0zZHW5frKioAlSsf7S4OGehOfcIH3eD6C4WNI9W/U6PD4Fx+QOLgMt/v6hhiyLDIKitu/JKuiQX4AyFtodMlSvF2nHDCRdTXbxqXLFuqNaCTjhOGuc22DJ7iJ/0SnrtvtDWcvG4TVDQU939xx1zpPggn8dYibY4XPA0InhnIfLju18QJQ6fL298D7M4c7G4baT8KA9Tnhwc6Krf6eGKlJo7hDvHRFed1BOrl0t8="],"65a7dc4906d7e2005a8ed74d11c7f21b":["5cXlPOUCbqUrnP7O","Z+wbYKoz42JRXQzt3ixxO4rX5zmXYpOqukeemRwz1NAWAS1xRqROQRC2ibgoEBRzGN+PTY01twbc1eEt7lVPsVyk6PU8622pfZGWDZeXNY8ZgIRpH15WmoR0m2Uarq4J+cSTkGSPRBMIEcBHWzcaAAGWPSmHe9hev3GS0TmGhYjCPKiWSI45lrN8EllCtcx+bxj2lWOGpeEX0ybPnEpJuC9anCz1/VUtxpzQyPwETY3NBQPeogbK9MpEyhQ7jPcQUl/GbZwwcQ=="],"8f19aef8c42c4acd972b4731e8e3070f":["VITmT4f1XX1+JFJL","JEUqTTzsPw9wO7hKphgEJQeu/8Q/wElTSsnYREwce4SeO5LVj2z5pVCrBIUN4NOb5kVv+PjOVmAvSnC3IiSJ6vKPKB1rqQL5e1x7KYt2rT5nsGqb2cejSMaQ7tnP+DlxCl8j0Hei3KW2ZfPtyHssr1e/4pAHVEXwca7IRQBS+6zwn/ndajrRRhzM8CeaMc+gTs5QcAOQQiFWCClQUWO9QwityHlYuNqW4gqMsjOMOorudme7x63uqHc0S4U4gTXUnszhvPHAYv80eJ+Gx9YTjXgzlMfVBKQiZgddYFIZ7MMeiv9fdDMqxe/UQZ0dUlamYi0cPhBrc7FdWLY+S/F4lcfH9CmdvldV1eBL1Y5czvreSSGKsMx8bU9x6SBt59CgACUd6YcEMDViji6JVUFBas15GwfE1jJ1ZNUVw/wPPgmqM0qWQ8GxbDIT6zHsSrK1R6NwusR86BfHpOmTCqc52Q=="],"e1c1ca8c92b5154271228bc0eedfeceb":["5SIrNgy81DYwTnDx","Wx6HCqCLXp1zd2GkgUWAWICr14mXhQ5gUwDrkUk2NbMfQe9s5rcV8FWRa4CvDiIRkImYSv+5Gsdh8Kbfk2mFOFe2nT3EK6qhQHHuf/B/4ZwiiixmO8VcUsLdA63mBgAdB31z96fCXOW96USOpFlpnEP9nHjALbn5BD/LIvv5NmiO/wFxQbzQr7Uh25TbElDqp9LLglQo+Xbpwh7cCgkIpwItGH4Ui+0ASuY8t5HRJ+JtO8XgiovCA+u9ghLRiN8HEyIxvfJlZOx8r23rxrCUVnD2pF2BQG19vqR7ZDfDkk6WbbgRwsbVD+DJOVD4lgN2z2B51j3piSweZ/508duhIUBxo+vsFtuW6DiDlBPg+FPPVoCW0F4vcw2+TCq0Cl+fvWEHxfWmowxWB7Wg/hxhMUSTrd7P+vZmq2Ot8MCzeN9cWN0f0grzUqSgW8LPjMfMF15vxil5VV0ujfDALV/LFhvbA9frGPCBNA9g5zBV"],"369455b916c1b9b0e077ced5e50accf4":["1hPj0zbSE32+On2p","rDBRrOnh2TzQdK8jMqkKmGH3ECPEqaFU0zuLOgoJJ+joSekRCU9aC/cY0rw/+QB4ltR8BpnksNbb2Euo5MvkT5XlfGmCUOh2+sobJd2gXJNSz4u1LG2tIB0f6q3b5XBZ8hfVM8x2NV/ccwHahkBEwtYNCdYdBdQxjsl0fAxQncQL5QdgedrwHipAC1j+N0ilKvXca/3sqJkAct+PFD1koViF0e8qglWGfDxLhVzu8pY6bvWbmgTn66fn3M3bIK+6lInNRhWNI4/xcPkoI8kp99php1A8Lyq29lOlyNnl2abdXZa63ZuUDN+Lz8IuWBXXNhhG26PoZ+Z8B/0j2ThIHImWVZGXcCRukOQyw4Rp6BBA6E5hkUXaUDZ+qe0JsCf4ziig9iSJCdMfa2swxSyjEO24RQcH7W00PQfyReMzuw6y1cIHqtoEkoImq46wpk6i4sUZRjHHlqUCQRw2RSgzDMrjpclQn6GiUmnzHA=="],"4e7c77c29de88894aab2e251964d0fd1":["PskwOdH1KkbDeVEl","C4BoGRDZ6ghN3Hf9wTbEJgxjI8bbvMLy4vk6s+3BJI5REQ4r9ukzI1nAspSJTVnFkkuOwmSmbEBrI/nyQug0ONBHBHVNT+zQgH3UgLvOx+sandawXfetC7N+rgkHBvPny7r6eyigHODyl/jdEE+6pNKgkK7jpaUXyk0J5SHV/7fiNtw0lXBomdIIzP0l2T7ItLdnROIEqwJzlOhdycBBiHc7q3Amhp9jaeZvCaTSh6aBhGhzWnFJW8W0/UqdIEQhd8pOWcjsmw=="],"19fa7ef3bc2364bdc02c8a669f3ce358":["gccri/JDOblg+qn1","YxPbXKkLMoOFnneE2rvJLAYyCiG7RFsJ1BT3J86aAs6R1MiF0hp5K9F2KVPsFVJiT/LmW/LFrPo2bJtPtkcLZZaPfEBZYDbNj44uNepwfD7SBVBwFuDHOOrOnaPWGj8cSowqrPd9dJZH5yHpEelyUlCK9rAiVRtLRKY4Jh2WxVUo49jHxI5PO/wTlZTScwiqPip8TyTaMlN3EiqNM4L/sApf2HNeSgkL5tDctEndih+Zj2UYvdXiJDit6Q83fquJqBcIF2WvedxrFwjCkHYQ3zCMQXUDHCYuLxsXpnzTUYMQqnQu7ZJenocOrAztFwii/QS381TQZxDREUqqBjvPT/kJpdVHq8H78xtVlNUGj6xet97eHJ3oItU3nassrGiQF3PnIPYg1NN63wDC0WQcK/od8BJeNS244mmOaCkyRMQZ/6kVagEZoaz/OmVaNr17I0SIMqfrxmxaqohm0A=="],"177bb2c118eac060cf96cc2f2ad0b1ac":["ViIfXM1jSlOG2T+m","1pAmkL1uwAaoBXIdhv8tKRrluooz5P10fiRwIPkvpVjhS2m3IP8rISZHvNAomLtys/JZ7scMB44lF1aXWpePvdcUcLG6ArHiuz+h86QgOMUtx/VROtEqABIAD74tBS4l3sTVWyogFJn5mRFmnG1j2pEknY/pdLX+UOj+OeNMEojL3iSuWVuNPAcE5BqegdawusmrEXMjLr497cdhLE2h1t8U9Ab0N6Ub9Q42lfOGk5MERKBUzeCBAhKA10Y3xBwrvtD04JzyNk6U5MIM5CnBnK9nwNrp8cdQl3jfyIL3OzMhtdBthiDLMn6Z7WQUh4O2vmJdmXJA54/Zh9UjeQA9mqiSujF3aTx/3r+KVh9Hmar57Jl70MejAbm+XsjAezfVzsAOApWdDGNXmmIqTjFI898/HKAxCOpoZqhnd52SMCUC6fl38txGkTh3YJvKghBePUdIJSs+ofaU0iM9JTA="],"b389cc5afe9a741abf560079cada7771":["9YdWrPi6Cdx8xooL","hvnyfPkY2S7lZ7gsLJPM1QmQWwNeZUx0tkuWcLgk4aFsqCp0vKByI9cS0c43vlPG16GiejLecT8mD9/Ki4oFdO1CMlqkYGxBbHrCP2mSwNF3pKABVSiqOFQE430WLaq03DEY4Yh+yY4CrL2xLRydIMzjhXSeXXIVg+4yUL+/ZTUhvWPB5CnS2MWdcYtWg3ZoC19qcosxTzeqWYu2tWS5Xar3tSNLlMJzTla26HQPEsgHJ9/ah/K6LplFJWkeh1gYCObOMV2Su71RAxij/57XpaxSxzMkN0rnFnKkKG/wEA6WGT2285qaSZJCRybBNoxdiMcS35HQRpaK9u565kbIJC8rc3NdEfUCTPgIFZcqSkVeVzb3EG1ZEzRTGYfWtPPHaBNHZteG3yPLuH+egGHrAS8XrSF3fiVxvop9JeFINrvr4uNCtSXM2moc7tftFjQDL08TFXxzTEAXGlmJUQ=="],"da269948f3b489a9a99b57c572fb2efc":["lqDaZslai90PNuDA","dscVuh+ZiRbCTsp9ZW9jDkSWdcr9MFTJCY3Ct46CbUd35oHqdVgOM+pitG/nJyXrRzLUMRB2QIuLy1bVv5T9LCGHpz3rGh6hP1rLVeRjy52A/xosvQJIlw4llR8jogOUZS/YMFOcusU/ycXEecO6lFp+VExeuJ8WLk71qWS2Hyi9kSIlDGXVqoLHEurd/G4uHDZw0+aCk4zXHd2u8NjzWEw2QBiNH3k8J8l3rKo9jcawPrv96oh5FgSKvZgfzNuw85laS0cNFEWC4JUYHgDTOZCmmh5ExZkMumeSzsc4tBBpm1bNpi6y/S6pPu57F97qJ4iyy/zUY6NqwDDoOGqb2hP0ji7Kl9SM2sE2zFL6dYmOvnKuHfspRvlJEci6Np2Z73lV/PgDKf3LOsHpOBVCJ8e4dhKHn77O+gAKsdqA4Q7HJV9ctwkk3bnyRTcayVIr1zFuCEHCh6jh6NvmfKp74Bf+dHfiPau7920="],"f22cae928135d4736dae3de0e7c54780":["7uosGlTILHCuvfJh","A1UhSDbfmuY/b6B71stEv2DZPhrnN5ql2f53agYmASF1Jq7j1HqaMB+KTgMAeg4zInLyUCrDR/yVwNKT5MDHD57jeAjMFfY1RlSk1THnhy5euBbQarqvwDFhpVTTgQr79XrvE0FJGfbKdpKsNB52vrkc+LLiqgVIeC4ekKlzn9cv6yKbSMdE6a5Jucl5VG0tHfbhimdq0QWTa8xUB5VozYZxjAYjI9pKX5mwqsC6Gm0xPUImbApiXnbmDzakHavdlosnejWtIAdAoDDYPzs5HRA="],"6e34d5ab8d6406e837a7ba2df10082d0":["t8eiWOPanhGIvjUa","bZIqMP+4oCPhIJq18JhmR3TuUtuQUicNf7rHX5l4SjrU8ECn8OyypHSsqnsoDlrjKItZeg6H1gaRbkp/Y3h52ulhrXY6nuYgvUKdjlMvAQAHSJFFsQjnu6GF7cb6J778ciNsRGBciBhPielMLTFHfcPfX+K4Z1iQTpTFcN56xhCjZB+RD0yRPCyfmUCWsb3OzV6+w6HrOzAGtwTb/GVozVDfpGIVG4O6WIAxFr4AXy1BFag2beeNHNquoubNH+TgjF/KDEf9eRtF"],"de15ed234f6833c4c7b4b0380cd182bc":["ALQhS9lZ3e8jxtVB","JXrriVkU9NNw6UFbW/SHeTShM5tbSvK5wL62OYEbgPqtQD6erY/efYWzdhHvgQUw8SgZM/HraaqVhSM81kOrFh7WnDvwScqvq4Mrb38nt5ZfDbY03tS5gep5hD97Rc+WvGNTu8/MIsbjUyFDxNatLPVvK84nIlxdHDRr5x83zgjRNpwFubVleDY6X3l9iEtf9xDjo1hdhET5ReZg9yp4Yz67pZe9DI60GdCmMX/sXjFKAUSGfBGpcHMmTDK1QeKuSH4p6X9p6Htyf+u1pE7scfiP0TUFe1d6FxwRMb5aAHErWhOTMglAm+bb8zQl6d7quf5vNUL5JIL/5CfnHbpHziOsWGJvDEuKIsUNyDOlTzruFH12j5wvQ+IBxbytbgXUZx3VVuqdxasNrBB2cPlTbpgdWd5NDMMciybPZ4WTaPJi34yJ3aYl2Y2bWe5wmK5faXCkzMOlbrNFgQ=="],"252b31dba41bb1d0938bc5193273fe06":["5dA5S0/axGgknNH0","OtxXZMBLCxMmeQgEqQC1FRTzQjcKGHtBOzF4COGD59md+cCmQu5/JpAjbMzgL51jiALUVyzUmCHcpUzAOVq9SEAOqoU8+nlEQ7OM0O7HgF4UAEnx5vkQOJHth0H3L3PysEPPwYdyM/G2j7EXtl0jiYjDwkZClYwW4gUmhSz+ke9oFvNpMLDG1Mt2Q2WcaluvjBhM3POclnOA06BUhd/ih9qldxqcfyFLuTL53RtRSPwhpHHllbviLcD/R+diwLPI43UsG63DCZtUnQE3XXW/rKSzlXvXws3AjDYDR+nG4ODk929wA5aYKYAXKND3CO6N8FqgqqgKez+8jzUG75EfBVh73mCkafRuaFrirGl1rNIBe4QCEXTjygUcwNO8r4nFCJbf0kMX+4Bpfo+FPbqTF7AxaHXlctCWCgNtyPFtYzosAQ+SZmgHQw8BTCXFcIY8RvIhFOBn4kSqUhSj3Kw0tGDM"],"c1994bd1201d0cd1c380198fe584861f":["BWaYKmabHypAHFsU","JGOLQRCSO6AvrBiYKENk0JjhHi7aYSrWiZjTQ2k1Jr7sXSmn7r/7ogDuq4jE1WqtXJ26Pzlnb0yXtyE7cVcZ87fuLwsZQ+YSbJy1/yonXYH2r4IDOoS8DhUDBHPePLBs5IJG4OWEu1zURNTbn2HOoQ0sbIQnAjhGZiS1QvUiuvv5Av3oe9ML3YBa41sci8npZQ7RtWOdgUUwtolrXiKkLEQLlQW4+lH+kmS11CPQ9U4/quDdN4eHB4EOeIlaoAHzfQUFxd9AHWKRc6u5bq4EVpwfGwVRVJAmyCqeKp/2rAzFGkGmhxIMNTmu4iV0gkTczrIbe/rdkCZKpEztXgUiziMUTA4LPi3FIvoHVkGL1ig6QIpPMoyJ6nPMoT4Qd6/KILKwk4JqAUmkLQGHv8fgAyJKv79U9k/vAqml300y+zrTCmI1WYcj3dQFESTdCoBd4RhXAlPQbL2xe2sC2iqfadrYHzs="],"96b33751a701fb83701e40bf9cbb3d4d":["UJLcp1FVs9V0SI8F","p464bs3/YciPgH+JppwgnscX/E5RE2otKsz2u/SJSRvTyyLdycVctjaAM0GPj/ctGfchi2EaDv0V66xYAmpw7q6/ASr5PDJtw4288PlTqgR/XkaON3YVWSzIMKt0Gc8aMrbGBxsudjQFJmwzenI7HHyXsmpnhu3w5LlP9T9nySPkDjNy8egIqF0/GhwJLSIq5mA6UT8fwNJFF+iHh8nS5Acwgq9fI0qn4xS+8MtcljFoMgMoAfXsZ5yH+FTsHXMZ+mIth32KCotmFzL9z1LKbIeSELzIGtl8S1qH8DotoAGMMxBWXTRB7RCxHD+DXnO+D83wG7z0z9yX4uhSZ9EPMfdgcW0tf+07nVBAh8qH2PsDeeJufmzMzj02eFDyZT4y5/zTM8AmNd6C0QP2Dt1Lin3dPCVc9TdIiPtTvMtJ11zVlGx+4z8nf2fVi0Os9zKvDDiQp5mnb/JGEQ=="],"c7523da9e1216656610b17906404b593":["HnDZ/XMeLdqsNLTd","04QZoH0W9TqN6Xi89Jl9J2CQdSmyOwx53rBrcYaIFONNwDSF5Ak3B8EZf1p8kuCOAFC9A+B7ryYcIE9zpak3PQDV8Vk3tBhNHAJuE2Q7AR2f37XXOkR8mzIqMlWxiEr08qwCcgCe23hCHJkdstoLtgPGltWYYSOqMxzh1/U/GmSDNFWaf+ChrQjzsU8Gn4RcseKAEZj3sHgglBrj1UzY971Z3D1g+Yeh9MJIcUJWGtZ20rUoZ0gtFRO6BTnrD5/p/IplSgGYnxfQGxCFvEaLQSB5dLelBch2gOlQVX1eHcV6LxA/DzrPMWj7I8VaZvYUlspx05QFJtI+PNOGAubQmdkE6b+ogT/ET+5myjcuHapPUJeIpsJZ75cLNwa1WneaoakYeYHr04ryQ9jcD7KIKlSnNsXdYytmKNz24Gec04/CkZEMS55HpEGxSphrHAJVs08NJpr+eZzIpJ7uX/s5mw=="],"66f440be2470337c642617c6c3d07ba0":["1I2hfa+trNdWqXJs","QaRwigdF/bUVATHgmwhS6vo/5O38LmKLLNz9ek+cmQibSDsGeKyXLtsa3+/MgNcBOFlJjJZXbkPG1cfBy0TFa2XqCX0u7MPc5o+lyL9j9TajBz35a/hEJclK9Ircp1BfWyjVo3P42vyvbkpxMA4+d8mZmDejoIbTwKgjXW0UEqPt/T16BKvBq90WoDjv/NjR1fM9036zEaqBPUw0GYnvp6lXp7AfpF5qYLDQYgUL3V6jD9RBej1QPlXkI143cCFLCaR0qKLmi5pXCTbnU2CVm8Kurzzss59Vg+1dlGL2XApVlG/fVKwsipgwQZDn1Od/ks3I7yXFVn6auoCgRuEk0WmGUZ2UPgB50HM+1FGm7OHYu3WIq1xdtiVyg5qJYtrl1sm6c/55D80Ywpz7k0g4BoKbM/mQDgxDjjgT9KIvscA+MBn5AyWBmyMDpMbqZGtDcC5AIsQuP2PCUwL1P9QPme8RjRY="],"b1d4269f4f22a7a7fb712737dcf776f6":["91xYSgSBqeYGy2KS","paHoVtLhHrf07z/Md2abGoftsrJQw5zVw5r2bLgFR3vlL5wDfa1tSxQ4168Rnlen4eumAxKbhuXQHo6PbuP2VBQkejtvo2bPezIHrQxN0TKorTjbnwKOdrHVtx2yTG7hB9GOcPH1bF5O1ekejSdetU2m1jG07s85PivpA425sOtMG54V+A9LNMD85ElhbZ6GHHF9wRoQg2NU8dHFT0EIf0oEkYKmQsDVmrJSSS21geR8Q++OX0o3nNW7xEUXszgoYkLE3ugcw2LS6qdlaZuRUXa7IvZ0o59VdA3Jou6bzxYWO0klDWgOO/0xM/LrQ6q8CqKjaMkC3Tsranmpsje09GoUXVQWuB2+gJMWmb0DeKF6IkaUPaMeuLbb1F5DoyXyR1ZnlQkGkmpwGcMmhS0wiEsS9CpWz4PkZt/X4WgPL4PRSjpoeLPAFVg+EJKxAMknCxFiJ7kY8DdzY8u6C2L1FDY="],"08860704cffa94b28c0655ec2613c673":["oPoczg5JCPqaygkj","SgUaL1hjIiro+dk161Fnp6+wLfsyMPQg0SZwIr5DFHx4fh7BB4mAstuW+qMa2PohOdzu+FSh1vPusdtrZnPRIlxQxvMcEbI0f7fx//Zlesa4CeDF2LQBP4GUecDgKEmW908a93Qd+H6lOTl1CmbarS3VM6/TQZEI4P9/jwxmp05QVtHx2FX3Lc24F0asVL84Yn+3RYffN5V1sNwNzewi9B1n1QhMSCY1dnvAYh54wpUFyy3B5YJy4fueOFrJusQhO9DRRRarGNVIQtvnJXEI1qQ8tyGn0HvVhRzxO0kmaqqmfjD5cGG4gesW/AaSmBgW+U5w7a6XGtl8jfS3/O68lHQkeVE/H7EKeDy10LuDRiXB9GsW9vjHiApO0GP4vxIkMzCiXOJBXE4r6cW+hLVuPHWvwycAXFRuMsadDuRyi7/RYA=="],"67f9b973637d69c91210191f5206f0e5":["plFqPFXvcw3hp2ph","Sv89Z5gxW2j5DD7LC5JK15cLILnpf1uBTA83RjepAt7hzu6cHiwIkGGTwKpcWH2l5eRkeDt/QnA75gKT4Kf/4DTGJOGZXlxNxNUsu9Mh8s+DqO+mQHUY/QS5KgvxmYygup3NZaWPa8qcKlILt3TPG6PcTfgPkuL69qIk2pksOJ7XydqV+iknNgSxqxZiiINKugEc7IZUcuXTW+cjD4tQem7cDBXdAK8NUnJU5F8ImUqhxi3j22ttT9KXD2RcnXounGNdPTwZJ7xcbjrFHnkuLDfo1oA3vzJDIJpMZmymaf2E6rERTRgMk7SpaJ2kx4l0EEGnBUAj+Tlzdj5qmgove55KfOXcLKaIZCDM6UPsnVUKnUzgI3BbVIqemGB5kkrIUiTZ39y5K7VQkbZQZoyMEt4J6ceLc6rM/qMYvBG+yI+std6kHg0HDmGz7nD8vA=="],"a1311a0afab4d8e05de829ac50c3f2a0":["uATSXy59ejPEPbfz","JXQT2brb58NEtFaQeQb4GIPeUm8xpjdkxtWImcbt2deu3UgVjsKhu0mrx2+7bBEumQ3lRwAkk9YAWCz68L7+lWJvK7uuyHHfBCM0s4/xULSzklB9X0MEIQD2iBQKQ4Ztck/BSZrVjO0qA/BPVDIT5G+0ia76Gl9U0xQCFIAiC6XfelsKOmT2Bqo6up62wmxl3jbq7CwqjCgNt9Ruf8pVytjXQWk7ECA39nNV0aCIoUdlYccFnL3OhA8g/T5qcCZ6ARJyCuy3XMoX8uyLDEGpZZ7O2rRWjUHGHmJ12UFXolQHd+3WtUBj6bl6BpTATWaDKCH89qKgZrgqr3KBl1un6GLtaOZKzsWV9/+1fKmJiKMmbgnTe53yErwnE+6Xwz8Oun4IPRg5v/CoIImjeTY8cx0zESyqQzW7HDPwvqVAazNjlw=="],"93b637d099d31faa1d0c46a3e8c6de87":["9NG+puGmv6epz4Iz","7T8/H/T6OC2B+8eNtcPH4ckRaYX3h2xjITMy2NAMiPjIYz5mehYo9GINh5ZZWTwSqOo5HR/U7AMisBUCebkOzZwMsvICMrF2CvN2NBUGpqyD/IxaP9LdU1IvZ9H9SdZH0YLhzoGcgvLet+Ru/SfIzADhynPM2Njb0sWsJ6OeTjYnPcfi9uYZb/5TvFgXUgjsMYh0ibh/XLnJ9lwvGiQh1rlLCnmP+PkQKWgUfgyv9hkEOypnW2bCHIXL/ol/TKcD2XJAoQa7PYs2auhqd011k8Vb2JSVyEqrDUhvRMMtR+I31qFuw6OCL4YepHX7xuaPSQtbiK7J4BctazfjSjwrpk5pvVLKV6T1c29Pp9yzpjnmx9Hs4cqLWCGwV4wYBmdQLonhxtT1Ie6ECv5Uw0bzZsmzjalxL8d3A2BzXN7hKAeCr+DhBKt+/+eM"],"4f9108a4441dc94af7bcadc92b04fbaf":["IR3fsxgJfDo3nEiZ","RZcWgkx2npskccoz6NtSHCNg6yLv+Op7+KaxlRE9RNvTqYT2N7ZC/FEcAjITFMMHCaEEyhWDu4MHz6Tr47n6zK4fGsl1ZvaZ8VaoAT8jOcxinXYLZGh/6WlHI4U8743GlP0hudCcmKlS58bS/Ea9a60J5Uput82WtHl1Ba53VfDqacRlc1Q1cq02svng4oE6svQNRSDaIxBwgpOKXLaRWVCNXwMTFIs4sN1+idvKGVkDiM81XYNCf0PaTlewrS2xTMH6hKUjRky907h6Wwy3jGI5Faz/ai1mfj9xA/U5DHTZVi31qRTVaeuTtSe9UjiZV+oJhrqsf5unlJxExxfj0t+GC5fTd1IHoQQBplZXwrqqRPpwyAYFyTgGOCemhvHpPfl29OSeYRkxBK2rAVvmMWph6N/iE3N3judU7wGBI/CyZAskRAQMpA=="],"b9e9d703e1094aa69d2a234c6e78dec0":["l3Nz1jjuOpDbhHi1","LWuO1Es12x9zVi5Wd1DVTaflurZ2zdYmafJA6KYH8U0LK/TbaXRDBIONc1IOFzKEit4F0PZ5OmXUg1gPvoWdglhgPkrsXoD7FzaibhJ6YjlBInpTOfCyhbZTIJlCGImKQhsONGVwnTdJ4F11r2pjTCghgXPIMW54P0Nd3eP4JKh2IA1FfzFaLh6uctY52AenyxzuC8M50ry+jKvDr53DowrjVVQWteIlb4ce8JcQvZk2fU+uV1mr0szuEgKGMbBy63a/9XOGBL2AvQ=="],"e0bc02d0c0ab82d835ec0f93f2f21aab":["RiRdxiw+GHqS2nKq","tFMHn7L6oG08uzTnSnYGzm5GctiWRC/ZdUBLqQwSgcvmVX+xys/ZqaXyV1Umfsba7ZSwxIm/w3kD7GLwNRoX27krvllDhueFNadLFziQrlKPydkyh9C1u0fd6v96ixhLFReeTY7g5lj/qe/M9pus4mEJcAYKbAJ7toTpXnLOXAXa4EyEULyciTXKHzGd/YklvevozgpkdKhNLlTd00uyckbCGi8Kp3poGfIAsB9z5f22xMH1VHN72COYPccktnymZ0kbMZ1VdxfOgxtnFqH6LxlBVw=="],"a206f6dd04f96aecbee87eca36aa5f40":["2Oqog7I2wdFStj/o","uS3qq74ltEHc9wXNLsDIdTVrpWnoDQP3mWaBZjD7ZXjbaby4iT8C4Tpm2Yjbd3E/Bb8KVLlwv850SQu9juFnGdtvrepaRvwGRY/KiATIOetWsSBrLsbmvlG+APp2iyPbCfuGIgWmkdDQ3FnGcVhMU7WxLMncQQg/GSbPHQuno5p2T53LaaPfLhpTfWJaACSJYxv9TkCMMt8pt53/YmpqXBJF77qlIGkLzDalkRGadTb5Bh/ZtdnWhNQefgbs7bFme56ddEnVfY6/xeU2GqR7u+c="],"fcdb707d229a6103ad0c5d838ff20182":["woaXt2fXQxtJDnVy","j0T+3uMKqWXq7x5th01qYquN3TWiaXKen/8zjt+qrMgk/7WWqGZHJVbIlv7Avrxhnar66acRin5jf2ubKDTRKoyIoxdbEBO7jTbSOzX4QxLFQ8OGaOEL3MMypb5RnksN5fgLYvUBGiH2WtHuAXPVRZRG4ovTM9N6/LYfYfBlQnL+HZn0sVRFWRRCmDSH9lASSy2Jy7oc27PU9YXOWpzCoq4w0GIE31/kCP5WomEuwcCM9+yZmIkwVk3MmnpgMHX+var0JBsAsw=="],"8993f8defe40b152230a630213f4a581":["+xMR9fK2icDmYhov","TzOy9DzK0cBtY1X0mdYYXbpAwLBPcC21RKtXpfj6rWAUxTnsgZXfQYWUf1kSJ/o52Zg0hVb1tTbkh2cB4pyl0fUuLcpS3ZBp6QWbletS3TkxXccrpP4nV6t8SC878xIKfug6pMk5Rq4zkYQRaVHcSNU9CkRV0tAxYQjpZDWS6UXeTw/7LzSk0zOIHcny1RTwiR7cJrXL7Rs+xq2VHg4xvFKZvkx1yiIPcO8ohL43qP/wXGPVNhxgIDQvPcvx8zxlvePF/YTKtsoTRu4="],"28904c28dca790c453c19559da57e559":["tR0a+RVHeFQBQH8R","DmtY/97Pggbk3P/Q1wJ12pk6L2DXiRr6PZC4hNVngjwOQhFjMl4pLDibQvZKocKRA/f/iIelYciiKQev6VGrRMAsDcSMnOpHuB/uunlSzJ9e4HycfoLtNq/yJoNrY1Xz4VYDyWgH8I3iNIePtl/88uYvmVs5KYN87ua8EwrxTWEs8rsrnkebZAfhYiLZo+LF10qT5yVzQo6I+JWWFQ+oblBvnTAgY41Sm5RZajhP1cnzmfHzNij4xK0pzWnOY6Jq3MD29B+hYo5sWsmmIQ=="],"884434e41c51db45c7dbb8b48e67ac21":["Ot1v8D+61BamK37L","G+L+ZJNo74oKMJz/QcoWmgNfO+2gIjS7mJRgwgvUZ/wXvDNuNeP/qe1oOXjIe0LBf/BZo3P6k7bElAfn8qHXI4veuf2IK2Ik3h89MP1DLBlwE3QPvFjN2CAoonsBuVmqzTNUcYup8DY/oArMtZghsLMjDLPCtMp54cxlIuNR/tUeQD2rOyFJca3x5A89qBayqhof1PD3CcELUNVIlCgZ0OltLE09UrMImTsb9UWXkZY/Z4TtAFo3bWwITFranKvxMoyoJs4pZZAYKTc1YFGpnuNltA=="],"ccf4ac496be518425c09e515bf3600e3":["W7YSkikfp3Z5+WGM","KJL/Y0MNL36nLQOwX0wGeQ2BYzhQs+6i5euTvW0BjIzvRYyssoU0Sv5gbEyEWvhkLJRSxqBRQW1hxcb0r9eSKmPe1aSSqR70Kc8mYyK+80JztUYk+TD0M6SDdFylnCSHekcwtGwzbWiIAPS/QK3qmMkkImy6m3RgzJR0AECMdgpaX6kH95QNamr0LU17dE/wmeXnWNKPTpAqugDuY98h50wVYYAwrqbetO46YpOIq4dSz+LlI9rV4a1/PMMIckeJvZx4NksS4LhxwmH6TaSDgJxdKkwT+WP9UbYeo+UIEoNQDv1FQh+kHcq8VFbL3D28xsgBG+8HAqp5py7sHL38iGJ2rSjviDunb53ics95sJ44y1BA/tXaADY2zMYYwdOZ/LCzp/HGbo02W2cmMkaMNagxgWw9uXbIN64wYOdizYfCRfOBg5gtKfc+yA1F3KG+7wMvHDQ5VWc9FrI="],"0c832187a30496e173ae165c2217215f":["8QYjqc2LzH4XXyar","OS69L+/CPmlX4bSl8ly6e57I+f77DV8d+wXNxSVj1xR94NpGB5AYUUjB/iHeqO/60WliCCNU9jp6UUbdZyquiNL2VrK0T306cBoImnHFmmKbZxdazVLVDeIfdgw6yMVYCscYn12zqBU3h0oiMxydeO1GSN2GL/jxSROjph5CCCmqaOloXyeqT9fVuZEnVuV9yChuLKT4Q2gqRksorUDalY2DSxB0gEVM0bo6Kuhsx6KiyFY5haJukVuvtzhhaDL3URdRLSIfo/B4H4Q7PTuljZPZu6Uqfxe3dhOQIN9qPucamzF3Cp2m7bbTpUGj56lGyA/93lKeRIcCN3P37U+os2cBpbh8lDVqgpHY0mpvCWGzJc7n4z9xVc8WWw67+VJab5B05wrXmWdMVuiQTNL/H9bYnV8pRBBtn8LBqxmnKQcQQ+zBrPfolDFiWslof5hnb2fzxSHw/pItpxfENO52RMg="],"e8cd3ebf60aca4b70a6caec5403346f8":["6dAlTzkEdhx0agmI","CP8z0Uzs7D/w2+x9b2C10T3YJXzOkpkTSrELWbMrr8hUttL6M6Una/0Nx3opTDR1VJjVLzmzeYtFerrjRP6NkYCtrTj1O0hLbg7e8+lmuH5W9pypHtdM8If6nFa6I/eV9K612AocgFV5QIRvMq62QZU22eOG6tviBFzughNHn5+Wmhbc+qKbR3AwCF4XzFVjvRFo1vYjn06FQtM/5pCdRaQG9HoyIaOuGb2OXrMzilYSwCQgFfVtTIM8uXjEB5bFV6hADbFAmbXvjP2efTB7yO6ZkYiIYuUOzWk9jluCzD5aRmPX3XmaJSooyXQfy85I2eKEZqfQKdWVhm/qBJ9ysvKrx5PvREG3iuWPdy6Y9Zbt6k83WhECSEI+y7vJylW2Hlt7rulPE9aPWw1VPe5DXsEpmKhwVmC0T5ddLyynON80dANiYys3ak0ytKcBNarQPxTVqX7MIj4OF1xRLpuw/0MMIJLZVxI="],"3d2808f095a7059f77818b1b689e5e48":["F7pphZk9/SWgSxsy","w+z33PDcK+S6uFYe4JHn595NzXCwzt9vgyVnmVyV1uxAlcJSkkjBAH73ynMfBTRHevEY3PsQ7n4tJ0CO/zbdgeeQc4ZiHAnuDlH54Z8GRy9Pf7V8NnUUmwB/mH9wzEhTDJDwgmf+xxNMSQrpdIaTA9+93qJ4RHRcemt38cUUsyVjoi5KjAiA2npQevDWa42HYuRAwS2dNqe/Ec+jzl2mbFqI/Cg2n8XaT/hvDUxfH6JgvyqFHDjuRSTJx1dE0kH502gT2R2/sMUhLwc4E1shb9QvpvBZbDN2PuX/RCol6lATtUm15tfW9RDtq9X0wc4SR4HUIEk4g0dvwCOx0Z8bVb+RGt5TzHNUmwtogCmNHDer/tcn6Ie2lJj1tMGosQQAJugajRmsZU8WOHzHaBYxTyOO/4twWn23li3hlVMldOVuCaeXTRQrBufS1+KfUGlMz1MkrKzdmZ4vxta9ZQ=="],"1f731631ec9dd3e8b979b8f4efa96dc5":["zg4ictdSMIcku8NJ","pfiybH4Cc2SvzZ7VGWE8MNbdrJ7adhEDUc0JBpHW3TGD/UTduWm5NnRezhR8Ba/c04xv034vKFArmO1kFi2qjyuwDy7N0wnmrzd/7WqzDfqIYzlJMgodQ+z82CdO9Y6apNLMC3bSpS/OAmNv0ODlIcUu6ScCHOGA/tYxFH7yBGL6fK+4zgAPohl9hCvqifRgV8LS2akSWyowj0oXwrUgNXIS6JB8rXMva/uIjXtDKk4uTiBVoYDXKe3MaWvwOLYDQjuRPa0SQXhQiCYanmKV6ORMmGsb/2qRgYKOAADaFidRXT3u59dFsOfWj31JWdkkoqDO70DOjGFfgbkNTOOn+bmxABILYnhyc49mY8SNJlUy0CuxOma5lSXaC7Z4+daG+g8lEmElSTL0I4KwBjNk6FM3Ub4wdwKOwZ+kcLPA0xSnbPjg0X4DpDOcut8IWQZ9/aJLGY5zrhjR0wrSgMvTE+By1DUN"],"2d1c91fdcf74fd4bc843e32921f75a57":["fyfwlenedB1QIaJ8","5e4+sLrktid1DjBUxaPXD0HIr+ppjdAjvRbU617QB+OTQgFjOPomCU8gv0KJwHHLbK/cpS4DjYSvvik3cy/UFUQv8GoNpJjAtpAzGDj92qANK/DFfCxMnNpccLt9nR9IN8sQbLE7XZMkyX0gCG9d5AjIuqdy4zded+zgSMhBlRDe4CAobtFK9mGCF6vWWE6VOtWF9SiTGtNHqHKxpUaGwC/fBSf1PNUZJ2T3L0ZdfBuap+f5HgRErCPiyRsqOQdl2VAxmiS+NHIDVrjqjCPnKQnDp2zoTj4ymo5hEscHsLfK/H5gUgcoWqOi09yug/ZvCcF9KbDTHotBW1yNQoZ4FBWPTDRRobTr6u6Dnp6/KjTzzKW7ONBe8/PJnmc2C9h/0cPBqEukJ2VZWJuBLSDKMEaoRe0pxPh4uF1IgeYqKN9CfR1+zYnl+lDAQZPTTfuc6qC9RvbsB32+A4xyDlnGw6E="],"9a273ec46bc5b866f88f20c8a1551306":["pHPZmjkGVDNkP/8F","nk0aftjb8V9ItC0Y9xa+9bRdobs3XLoJvURm8ydu61eORFvcIhNmQ80xwq9FbfAsl4WxxUr73rfF1oGBdLaLZOfxeUx4xLYVXDCiXHwcc2ZyIg3cqE9QqyYUCQZU/n9OIFUCinKh+VZu1JT7YXxPoNTkHKvsw7Ii7U5N3o8W4ndAPONe+Uqshs4NRwhN4hSn78UP0moWpg6Nxz5iCxUqhXf0D7LESEFNaqeehFvEMgropp4ZTWXE+AeqXuYB5C5iWuvbsj5Ls4WtE9AIfbZ4QjrV6+J18frwAnxfhljACxf55M/soWija/q6oNtK5Pnk13pepS4uvCV5MifrmzOO6hz9pydpscoIJsNFl9pzzzbdYB+4c9SQ450pCsiedZzjMUyuKJlU07Bf4+UM3plguoXTDDlEkbyHDCyISTW/5XYSzP3MVF2K5VCe/c812q2FXz7HPBf6K2UAxmY/rfi4W6E="],"c5ffb2d89b6b2562628fb214cad5a549":["iZ8QL1D9zA3K+++i","eau7D5ehz/RZivfZM/wYoVU8/eGs2bc7TRWPEMQjwAS2RYY1+uQhIJElBAdjP+GrFqB4m042rsFd4U0TMQ941F38LUQsl8r6zmnRhJqdwyL/cc2vbdAjkPhlJ0HwaWSA00SNStkjBr7gVoZuGxb4GoLWE78Zih87idM5l69zbGW42Ew4Lk2vjIuey9FqsaDGprwiSpHVCvWWYDkJoX8zpp4RrFrU3Y3h5bREqHKiB/fo2es/8iSqkoRxT/2aCExeBfMsSYh6bY57edTVNZyzkQ++2mWNkcurAxD+4c85XxGy5K0vJI46+M3UdochGF+B4vqHbtRWEUzMkkhgzEdf5RmuGzE2m0pnDUrqXkziIBezs8Pkve0rlJGd8QL1HAuzEWZBDXVA1y6LKIHDyitdXUmccGbzMBZo0rCthbaNAKWZ/cffmOFXjHKSIFNnTjbGtfISUpIbGSFYh92hkbC1hl4dkHioBY0fO3mHTKaGys49VI8="],"cda785592141736c48cddbec1b10e81b":["UHDG50CZ/KXbkRUY","6Y399d9bARjjefQKKBAeQHe2VinOXoM7E34bSbOfb+0FCtc0n+cms2NdguZs5Rg86fwzN1HvkpviQ0PVoAz9B/uPkspzkgFgYeYS2qW5BpHYTpvK40LgmTm62yrWPcyoWm+GXCy/h2SC42t3Vasw5+KYcyg3K8W6c8bsI5ZtCfLsOJ2PbgZD2YUukmYT82NfQ/cDkjgJPlxFI0hvAA8+oxnQVzEpBACgBz9Ol8IpxmvdISwdhn41/PR0D/osHB1MfK9mWmI320pjMnZgvqEIO/uT+LotKLYrVCxk+5P/38uYLXF50JhwbDAEATMa2glYu8Fcor8O1lbbpNWbmZdFyKD1mqbcB8VGU5Ye36ZLCCRnNSY3RPGn5UvychWXeJ67Q/DYKeY7iOiLxIRmsT7DSUnWu0yUd0PqPv4tvvHGvKFmqlAuTQ=="],"2ba195094b7878e51c1c6daa318dfb92":["mYIiGju6PrTMORCG","fJStL//qHwnyvGGw53V01S/NMlZJq1NvBnw9/HYJ58hHG+perC4lawK9JFt0RzSCij1v4ZycMFULGFO5zW7flQMS5FSgrqtJ4xWoNUuJmhTxpvj/MWUTy76B6tN2zyt98qNsziBd4DH7k4sA0bh2IQdVxWVqR5huJEIz187IQfDkuBY5sXJsZyAGi56oTd6WFq9EnCSdAKFsel5pVlv3foUjGYlZ2fMZ1KQn9eg9ttW/s0lQtl167paBq7qr3Mkdss5Oay9vB/cRy51ZIFP5HdSL9DnHrVwth/Nzn120TgbAd0Hh91Dr9PbYpfFArFDQCMOyJy6Jh3RDqt6omIK7n2LJdlqKBOe/4noC9MCjZ8ENoNOosGZkwsSc4a1yuenVjcgzEfFNfruVykyqehlkuQLzV23PB9lknMGxGYRDV5Wz2xERvAFxsOXB7GYRMkXd7g=="],"0a22b703216a2b4aeb98e8f5783aa8e5":["XyS5i8y8NhQ5qjaS","1B85+mpRyDnfuGJHgOjqaySpYpp28kSBRGfkxnoWm/fR3w/D/CBsMgosJ3gEVWx1s9k7Gmw8vtyS06R8HngB4Fc4HKxgc9GcFMktggwlKegNkti/cLJxxfUnX6qjC7UON+K4CuaikX3ropJgJtncod1CENVRc1pf8FFNs0ZOZPBYa16QvI2h593WFWdqrv3EeFGFH+a2tcLFG9SXXZzAksNZVIKwiyt0Mg+23PS9ih0n2wZxAsTITepL0aSDZxwFZR0zCcfVfXEZOAXL4vA53NAdRk5HWZNFxPTmdQWMOY5wa3upxeDu8VjkiGSXbi5WrDQw+XCHrBLVNxtdc717mZ3Ji6BdcpZbksgC+dPuWj5eCPuWlmg4xhnM0kPShriI5ZXsfn0b9qwilGIjPzkw4c/OUmp6gFhfBl2NlRD5xwrj1CKD9A=="]};
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbzrgj39DS6FSt29WDjLGBdNPpSnjCc14w_D8jDFWuMIVwuXaOI_fGm9ZpTr-cA-nVkH/exec";
+  var WHATSAPP = "212645147247";
+
+  function normaliser(s) {
+  return String(s || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z]+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+    .sort()
+    .join(' ');
+}
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fiche = null;
+  var saisieBrute = '';
+
+  if (!ENDPOINT) $('apercu').hidden = false;
+  $('lien-whatsapp').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Bonjour, BS Congress 2026, retour vers l\'aéroport : ');
+
+  function b64(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  function hex(u8) { return Array.prototype.map.call(u8, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+
+  function montrer(id) {
+    ['recherche', 'fiche', 'introuvable', 'merci'].forEach(function (x) { $(x).hidden = x !== id; });
+    window.scrollTo(0, 0);
+  }
+
+  async function chercher(texte) {
+    var cle = normaliser(texte);
+    if (cle.split(' ').length < 2) return { erreur: 'Tapez votre prénom ET votre nom.' };
+    if (!window.crypto || !crypto.subtle) return { erreur: 'Votre navigateur ne permet pas la recherche. Écrivez-nous sur WhatsApp.' };
+    var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(cle), 'PBKDF2', false, ['deriveBits']);
+    var bits = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64(SEL), iterations: ITERATIONS }, base, 512));
+    var entree = COFFRE[hex(bits.slice(0, 16))];
+    if (!entree) return { introuvable: true };
+    var k = await crypto.subtle.importKey('raw', bits.slice(32), 'AES-GCM', false, ['decrypt']);
+    var clair = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(entree[0]) }, k, b64(entree[1]));
+    return { fiche: JSON.parse(new TextDecoder().decode(clair)) };
+  }
+
+  function afficherFiche(f) {
+    $('f-nom').textContent = f.nom;
+    $('f-jour').textContent = f.jour.charAt(0).toUpperCase() + f.jour.slice(1);
+    $('f-vol').textContent = f.vol || 'non communiqué';
+    $('f-decollage').textContent = f.aCompleter ? 'à préciser' : f.decollage;
+    $('f-pickup').textContent = f.priseEnCharge;
+    $('f-regle').textContent = f.plusieursVols
+      ? 'La navette part 3 h avant le premier vol du groupe : plusieurs vols proches partagent le même véhicule.'
+      : 'La navette part 3 h avant le décollage.';
+    $('f-info').hidden = !f.info;
+    $('f-info').textContent = f.info || '';
+    // Tout champ saisi pour le participant precedent est vide : sur un meme telephone
+    // (une hotesse qui aide plusieurs personnes), son numero partirait avec la reponse
+    // du suivant (constate au test du 16/09).
+    ['f-tel', 'c-vol', 'c-heure', 'c-commentaire'].forEach(function (id) { $(id).value = ''; });
+    $('changement').hidden = true;
+    $('choix').hidden = false;
+    $('msg-fiche').textContent = '';
+    $('msg-fiche').className = 'message';
+    if (f.aCompleter) ouvrirChangement();
+  }
+
+  function ouvrirChangement() {
+    $('choix').hidden = true;
+    $('changement').hidden = false;
+    $('c-date').value = fiche.date;
+    $('c-vol').value = fiche.vol || '';
+    $('c-heure').value = fiche.aCompleter ? '' : fiche.decollage.replace('h', ':').padStart(5, '0');
+    $('c-vol').focus();
+  }
+
+  var LIBELLES = { confirme: 'Je confirme', changement: 'Changement', pas_de_navette: 'Pas besoin de navette', introuvable: 'Nom introuvable, demande de navette' };
+
+  function whatsappDe(p) {
+    var t = 'Bonjour, BS Congress 2026, retour vers l\'aéroport. ' + (p.nom || p.nomSaisi) + ' : ' + LIBELLES[p.type] + '.';
+    if (p.nouveau && (p.nouveau.vol || p.nouveau.heure)) t += ' Vol ' + (p.nouveau.vol || '?') + ' le ' + p.nouveau.date + ' à ' + (p.nouveau.heure || '?') + '.';
+    if (p.commentaire) t += ' ' + p.commentaire;
+    return 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(t);
+  }
+
+  // La reponse est attendue AVANT d'afficher « merci » : un envoi non attendu meurt
+  // avec la page, et le participant croirait avoir repondu.
+  async function envoyer(p, zoneMessage, boutons) {
+    p.piege = $('piege').value;
+    p.page = 'bs-congress-retours';
+    boutons.forEach(function (b) { b.disabled = true; });
+    zoneMessage.className = 'message';
+    zoneMessage.textContent = 'Envoi en cours…';
+    try {
+      if (!ENDPOINT) throw new Error('apercu');
+      var r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+      var j = await r.json();
+      if (!j || j.ok !== true) throw new Error((j && j.erreur) || 'refus');
+      montrer('merci');
+      $('merci-texte').textContent = p.type === 'confirme'
+        ? 'Merci ' + (p.prenom || '') + ', c\'est noté : rendez-vous à ' + fiche.priseEnCharge + ' à l\'hôtel.'
+        : p.type === 'pas_de_navette'
+          ? 'Merci, c\'est noté : pas de navette pour vous.'
+          : 'Merci, c\'est bien reçu. Nous revenons vers vous si besoin.';
+    } catch (e) {
+      zoneMessage.className = 'message erreur';
+      zoneMessage.textContent = '';
+      zoneMessage.appendChild(document.createTextNode('L\'envoi n\'a pas abouti. Réessayez, ou '));
+      var a = document.createElement('a');
+      a.href = whatsappDe(p);
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'envoyez-nous la même réponse sur WhatsApp';
+      zoneMessage.appendChild(a);
+      zoneMessage.appendChild(document.createTextNode('.'));
+    } finally {
+      boutons.forEach(function (b) { b.disabled = false; });
+    }
+  }
+
+  function base(type) {
+    return {
+      type: type,
+      fiche: fiche ? fiche.fiche : '',
+      nom: fiche ? fiche.nom : '',
+      prenom: fiche ? fiche.nom.split(' ')[0] : '',
+      nomSaisi: saisieBrute,
+      prevu: fiche ? { date: fiche.date, vol: fiche.vol, decollage: fiche.decollage, priseEnCharge: fiche.priseEnCharge } : null,
+      telephone: '',
+      commentaire: ''
+    };
+  }
+
+  $('recherche').addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    var btn = $('btn-chercher');
+    saisieBrute = $('saisie').value.trim();
+    btn.disabled = true;
+    $('msg-recherche').className = 'message';
+    $('msg-recherche').textContent = 'Recherche…';
+    try {
+      var res = await chercher(saisieBrute);
+      if (res.erreur) { $('msg-recherche').className = 'message erreur'; $('msg-recherche').textContent = res.erreur; return; }
+      $('msg-recherche').textContent = '';
+      if (res.introuvable) {
+        fiche = null;
+        ['d-vol', 'd-heure', 'd-tel', 'd-commentaire'].forEach(function (id) { $(id).value = ''; });
+        $('msg-demande').textContent = '';
+        $('d-nom').value = saisieBrute;
+        montrer('introuvable');
+        return;
+      }
+      fiche = res.fiche;
+      afficherFiche(fiche);
+      montrer('fiche');
+    } catch (e) {
+      $('msg-recherche').className = 'message erreur';
+      $('msg-recherche').textContent = 'La recherche n\'a pas fonctionné. Réessayez, ou écrivez-nous sur WhatsApp.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.getAttribute('data-action');
+    if (a === 'autre-nom') { fiche = null; $('saisie').value = ''; montrer('recherche'); $('saisie').focus(); return; }
+    if (a === 'ouvrir-changement') { ouvrirChangement(); return; }
+    if (a === 'fermer-changement') { $('changement').hidden = true; $('choix').hidden = false; return; }
+    if (a === 'confirme' || a === 'pas_de_navette') {
+      var p = base(a);
+      p.telephone = $('f-tel').value.trim();
+      envoyer(p, $('msg-fiche'), Array.prototype.slice.call($('choix').querySelectorAll('button')));
+    }
+  });
+
+  $('changement').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var p = base('changement');
+    p.telephone = $('f-tel').value.trim();
+    p.nouveau = { date: $('c-date').value, vol: $('c-vol').value.trim(), heure: $('c-heure').value };
+    p.commentaire = $('c-commentaire').value.trim();
+    if (!p.nouveau.vol && !p.nouveau.heure && !p.commentaire) {
+      $('msg-fiche').className = 'message erreur';
+      $('msg-fiche').textContent = 'Indiquez au moins le numéro de vol, l\'heure ou un commentaire.';
+      return;
+    }
+    envoyer(p, $('msg-fiche'), Array.prototype.slice.call($('changement').querySelectorAll('button')));
+  });
+
+  $('demande').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var p = base('introuvable');
+    p.nomSaisi = $('d-nom').value.trim();
+    p.telephone = $('d-tel').value.trim();
+    p.nouveau = { date: $('d-date').value, vol: $('d-vol').value.trim(), heure: $('d-heure').value };
+    p.commentaire = $('d-commentaire').value.trim();
+    envoyer(p, $('msg-demande'), Array.prototype.slice.call($('demande').querySelectorAll('button')));
+  });
+})();
+</script>
+</body>
+</html>
